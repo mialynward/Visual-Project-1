@@ -2,4 +2,4 @@
 Project 1 for Visualization and Visual Analytics.
 By Mia Ward
 
-This project utilizes the JavaScript library D3.v5 to illustrate the climate change in Lubbock, Tx over the past 50 years.
+This project utilizes the JavaScript library D3.v4 to illustrate the expected population growth in 50 years of the top 10 countries with the largest population.
