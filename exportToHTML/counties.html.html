@@ -1,0 +1,207 @@
+<html>
+<head>
+<title>counties.html</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #e8bf6a;}
+.s1 { color: #bababa;}
+.s2 { color: #a9b7c6;}
+.s3 { color: #a5c261;}
+.s4 { color: #6897bb;}
+.s5 { color: #cc7832;}
+.s6 { color: #cc7832; font-weight: bold;}
+.s7 { color: #6a8759;}
+.s8 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+counties.html</font>
+</center></td></tr></table>
+<pre><span class="s0">&lt;!DOCTYPE </span><span class="s1">html</span><span class="s0">&gt;</span>
+&lt;html <span class="s1">lang=</span><span class="s3">&quot;en&quot;</span><span class="s0">&gt;</span>
+&lt;head&gt;
+    &lt;meta <span class="s1">charset=</span><span class="s3">&quot;UTF-8&quot;</span><span class="s0">&gt;</span>
+    &lt;title&gt;<span class="s2">Expected Population Growth 50 Years</span><span class="s0">&lt;/title&gt;</span>
+    &lt;script <span class="s1">src=</span><span class="s3">&quot;https://d3js.org/d3.v4.min.js&quot;</span><span class="s0">&gt;&lt;/script&gt;</span>
+    &lt;script <span class="s1">src=</span><span class="s3">&quot;//d3js.org/d3-scale-chromatic.v0.3.min.js&quot;</span><span class="s0">&gt;&lt;/script&gt;</span>
+
+
+    &lt;style&gt;
+        body <span class="s2">{ </span><span class="s1">font</span><span class="s2">: </span><span class="s4">12</span><span class="s3">px </span><span class="s0">Arial</span><span class="s5">;</span><span class="s2">}</span>
+
+        <span class="s0">path </span><span class="s2">{</span>
+            <span class="s1">stroke</span><span class="s2">: </span><span class="s3">steelblue</span><span class="s5">;</span>
+            <span class="s1">stroke-width</span><span class="s2">: </span><span class="s4">2</span><span class="s5">;</span>
+            <span class="s1">fill</span><span class="s2">: </span><span class="s3">none</span><span class="s5">;</span>
+        <span class="s2">}</span>
+
+        .<span class="s0">axis path</span><span class="s5">,</span>
+        <span class="s2">.</span><span class="s0">axis line </span><span class="s2">{</span>
+            <span class="s1">fill</span><span class="s2">: </span><span class="s3">none</span><span class="s5">;</span>
+            <span class="s1">stroke</span><span class="s2">: </span><span class="s3">grey</span><span class="s5">;</span>
+            <span class="s1">stroke-width</span><span class="s2">: </span><span class="s4">1</span><span class="s5">;</span>
+            <span class="s1">shape-rendering</span><span class="s2">: </span><span class="s0">crispEdges</span><span class="s5">;</span>
+        <span class="s2">}</span>
+
+        .<span class="s0">container </span><span class="s2">.</span><span class="s0">header </span><span class="s2">{</span>
+            <span class="s1">height</span><span class="s2">: </span><span class="s4">65</span><span class="s3">px</span><span class="s5">;</span>
+        <span class="s2">}</span>
+
+        .<span class="s0">container </span><span class="s2">.</span><span class="s0">header </span><span class="s2">.</span><span class="s0">text </span><span class="s2">{</span>
+            <span class="s1">float</span><span class="s2">: </span><span class="s3">left</span><span class="s5">;</span>
+            <span class="s1">vertical-align</span><span class="s2">: </span><span class="s3">bottom</span><span class="s5">;</span>
+            <span class="s1">font-family</span><span class="s2">: </span><span class="s3">sans-serif</span><span class="s5">;</span>
+            <span class="s1">font-size</span><span class="s2">: </span><span class="s3">x-large</span><span class="s5">;</span>
+        <span class="s2">}</span>
+
+    <span class="s0">&lt;/style&gt;</span>
+
+
+&lt;/head&gt;
+&lt;div <span class="s1">id=</span><span class="s3">&quot;container&quot; </span><span class="s1">class=</span><span class="s3">&quot;container&quot;</span><span class="s0">&gt;</span>
+    &lt;div <span class="s1">class=</span><span class="s3">&quot;header&quot;</span><span class="s0">&gt;</span>
+        &lt;div <span class="s1">class=</span><span class="s3">&quot;header text&quot;</span><span class="s0">&gt;</span><span class="s2">Projected Population Next 50 Years</span><span class="s0">&lt;/div&gt;</span>
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;body&gt;
+&lt;p&gt;
+    <span class="s2">This graph shows the projected population of the top 10 countries with the current highest population. Please double click</span>
+    names of countries to show their population.
+<span class="s0">&lt;/p&gt;</span>
+&lt;script&gt;
+        <span class="s6">var </span><span class="s2">parseTime = d3.timeParse(</span><span class="s7">&quot;%Y&quot;</span><span class="s2">)</span><span class="s5">;</span>
+        <span class="s2">bisectDate = d3.bisector(</span><span class="s6">function</span><span class="s2">(d) { </span><span class="s6">return </span><span class="s2">d.year</span><span class="s5">; </span><span class="s2">}).left</span><span class="s5">;</span>
+
+        <span class="s8">//Read the data</span>
+        <span class="s2">d3.csv(</span><span class="s7">&quot;countries.csv&quot;</span><span class="s5">, </span><span class="s6">function</span><span class="s2">(error</span><span class="s5">, </span><span class="s2">data) {</span>
+            <span class="s6">if </span><span class="s2">(error) </span><span class="s6">throw </span><span class="s2">error</span><span class="s5">;</span>
+            <span class="s8">//format data</span>
+            <span class="s2">data.forEach(</span><span class="s6">function </span><span class="s2">(d) {</span>
+                d.year = parseTime(+d.year)<span class="s5">;</span>
+                <span class="s2">d.population = +d.population</span><span class="s5">;</span>
+            <span class="s2">})</span><span class="s5">;</span>
+            <span class="s2">console.log(data)</span><span class="s5">;</span>
+
+            <span class="s8">// Set the dimensions of the canvas</span>
+            <span class="s6">var </span><span class="s2">margin = {top: </span><span class="s4">30</span><span class="s5">, </span><span class="s2">right: </span><span class="s4">20</span><span class="s5">, </span><span class="s2">bottom: </span><span class="s4">30</span><span class="s5">, </span><span class="s2">left: </span><span class="s4">50</span><span class="s2">}</span><span class="s5">,</span>
+                <span class="s2">width = </span><span class="s4">1500 </span><span class="s2">- margin.left - margin.right</span><span class="s5">,</span>
+                <span class="s2">height = </span><span class="s4">500 </span><span class="s2">- margin.top - margin.bottom</span><span class="s5">;</span>
+
+            <span class="s6">var </span><span class="s2">formatNumber = d3.format(</span><span class="s7">&quot;.1f&quot;</span><span class="s2">)</span><span class="s5">;</span>
+
+            <span class="s8">// Set the ranges</span>
+            <span class="s6">var </span><span class="s2">x = d3.scaleTime()</span>
+                .range([<span class="s4">0</span><span class="s5">, </span><span class="s2">width])</span><span class="s5">;</span>
+
+            <span class="s6">var </span><span class="s2">y = d3.scaleLinear()</span>
+                .domain([<span class="s4">0</span><span class="s5">, </span><span class="s4">1e9</span><span class="s2">])</span>
+                .range([height<span class="s5">, </span><span class="s4">0</span><span class="s2">])</span><span class="s5">;</span>
+
+            <span class="s6">var </span><span class="s2">xAxis = d3.axisBottom(x)</span>
+                .ticks(d3.timeYear)<span class="s5">;</span>
+
+            <span class="s6">var </span><span class="s2">yAxis = d3.axisRight(y)</span>
+                .tickSize(width)
+                .tickFormat(<span class="s6">function</span><span class="s2">(d) {</span>
+                    <span class="s6">var </span><span class="s2">s = formatNumber(d / </span><span class="s4">1e9</span><span class="s2">)</span><span class="s5">;</span>
+                    <span class="s6">return this</span><span class="s2">.parentNode.nextSibling</span>
+                        ? <span class="s7">&quot;</span><span class="s5">\xa0</span><span class="s7">&quot; </span><span class="s2">+ s</span>
+                        : s + <span class="s7">&quot; Billion People&quot;</span><span class="s5">;</span>
+                <span class="s2">})</span><span class="s5">;</span>
+
+            <span class="s8">// Define the line</span>
+            <span class="s6">var </span><span class="s2">line = d3.line()</span>
+                .x(<span class="s6">function</span><span class="s2">(d) { </span><span class="s6">return </span><span class="s2">x(d.year)</span><span class="s5">; </span><span class="s2">})</span>
+                .y(<span class="s6">function</span><span class="s2">(d) { </span><span class="s6">return </span><span class="s2">y(d.population)</span><span class="s5">; </span><span class="s2">})</span><span class="s5">;</span>
+
+
+            <span class="s8">// Add the svg canvas to page</span>
+            <span class="s6">var </span><span class="s2">svg = d3.select(</span><span class="s7">&quot;body&quot;</span><span class="s2">)</span>
+                .append(<span class="s7">&quot;svg&quot;</span><span class="s2">)</span>
+                .attr(<span class="s7">&quot;width&quot;</span><span class="s5">, </span><span class="s2">width + margin.left + margin.right)</span>
+                .attr(<span class="s7">&quot;height&quot;</span><span class="s5">, </span><span class="s2">height + margin.top + margin.bottom)</span>
+                .append(<span class="s7">&quot;g&quot;</span><span class="s2">)</span>
+                .attr(<span class="s7">&quot;transform&quot;</span><span class="s5">,</span>
+                    <span class="s7">&quot;translate(&quot; </span><span class="s2">+ margin.left + </span><span class="s7">&quot;,&quot; </span><span class="s2">+ margin.top + </span><span class="s7">&quot;)&quot;</span><span class="s2">)</span><span class="s5">;</span>
+            <span class="s6">var </span><span class="s2">g = svg.append(</span><span class="s7">&quot;g&quot;</span><span class="s2">)</span>
+                .attr(<span class="s7">&quot;transform&quot;</span><span class="s5">, </span><span class="s7">&quot;translate(&quot; </span><span class="s2">+ margin.left + </span><span class="s7">&quot;,&quot; </span><span class="s2">+ margin.top + </span><span class="s7">&quot;)&quot;</span><span class="s2">)</span><span class="s5">;</span>
+
+
+            <span class="s8">// Scale the range of the data</span>
+            <span class="s2">x.domain(d3.extent(data</span><span class="s5">, </span><span class="s6">function</span><span class="s2">(d) { </span><span class="s6">return </span><span class="s2">d.year</span><span class="s5">; </span><span class="s2">}))</span><span class="s5">;</span>
+            <span class="s2">y.domain([</span><span class="s4">0</span><span class="s5">, </span><span class="s2">d3.max(data</span><span class="s5">, </span><span class="s6">function</span><span class="s2">(d) { </span><span class="s6">return </span><span class="s2">d.population</span><span class="s5">; </span><span class="s2">})])</span><span class="s5">;</span>
+
+            <span class="s8">// Nest the entries by symbol</span>
+            <span class="s6">var </span><span class="s2">dataNest = d3.nest()</span>
+                .key(<span class="s6">function</span><span class="s2">(d) {</span><span class="s6">return </span><span class="s2">d.country</span><span class="s5">;</span><span class="s2">})</span>
+                .entries(data)<span class="s5">;</span>
+
+            <span class="s8">// set the colour scale</span>
+            <span class="s6">var </span><span class="s2">color = d3.scaleOrdinal(d3.schemeSet2)</span><span class="s5">;</span>
+
+            <span class="s8">// Loop through the nest to assign line and color for line</span>
+            <span class="s2">dataNest.forEach(</span><span class="s6">function</span><span class="s2">(d</span><span class="s5">,</span><span class="s2">i) {</span>
+
+                svg.append(<span class="s7">&quot;path&quot;</span><span class="s2">)</span>
+                    .attr(<span class="s7">&quot;class&quot;</span><span class="s5">, </span><span class="s7">&quot;line&quot;</span><span class="s2">)</span>
+                    .style(<span class="s7">&quot;opacity&quot;</span><span class="s5">, </span><span class="s4">0</span><span class="s2">)</span>
+                    .style(<span class="s7">&quot;stroke&quot;</span><span class="s5">, </span><span class="s6">function </span><span class="s2">() { </span><span class="s8">// Add the colours dynamically</span>
+                        <span class="s6">return </span><span class="s2">d.color = color(d.key)</span><span class="s5">;</span>
+                    <span class="s2">})</span>
+                    .attr(<span class="s7">&quot;id&quot;</span><span class="s5">, </span><span class="s7">'tag' </span><span class="s2">+ d.key.replace(</span><span class="s7">/\s+/g</span><span class="s5">, </span><span class="s7">''</span><span class="s2">)) </span><span class="s8">// assign an ID</span>
+                    <span class="s2">.attr(</span><span class="s7">&quot;d&quot;</span><span class="s5">, </span><span class="s2">line(d.values))</span><span class="s5">;</span>
+
+                <span class="s2">svg.append(</span><span class="s7">&quot;g&quot;</span><span class="s2">)</span>
+                    .attr(<span class="s7">&quot;transform&quot;</span><span class="s5">, </span><span class="s7">&quot;translate(0,&quot; </span><span class="s2">+ height + </span><span class="s7">&quot;)&quot;</span><span class="s2">)</span>
+                    .call(customXAxis)<span class="s5">;</span>
+
+                <span class="s2">svg.append(</span><span class="s7">&quot;g&quot;</span><span class="s2">)</span>
+                    .call(customYAxis)<span class="s5">;</span>
+
+                <span class="s6">function </span><span class="s2">customXAxis(g) {</span>
+                    g.call(xAxis)<span class="s5">;</span>
+                    <span class="s2">g.call(d3.axisBottom(x)</span>
+                        .ticks(<span class="s4">25</span><span class="s2">))</span><span class="s5">;</span>
+                    <span class="s2">g.select(</span><span class="s7">&quot;.domain&quot;</span><span class="s2">).remove()</span><span class="s5">;</span>
+                <span class="s2">}</span>
+
+                <span class="s6">function </span><span class="s2">customYAxis(g) {</span>
+                    g.call(yAxis)<span class="s5">;</span>
+                    <span class="s2">g.select(</span><span class="s7">&quot;.domain&quot;</span><span class="s2">).remove()</span><span class="s5">;</span>
+                    <span class="s2">g.selectAll(</span><span class="s7">&quot;.tick:not(:first-of-type) line&quot;</span><span class="s2">).attr(</span><span class="s7">&quot;stroke&quot;</span><span class="s5">, </span><span class="s7">&quot;#777777&quot;</span><span class="s2">).attr(</span><span class="s7">&quot;stroke-dasharray&quot;</span><span class="s5">, </span><span class="s7">&quot;2,2&quot;</span><span class="s2">)</span><span class="s5">;</span>
+                    <span class="s2">g.selectAll(</span><span class="s7">&quot;.tick text&quot;</span><span class="s2">).attr(</span><span class="s7">&quot;x&quot;</span><span class="s5">, </span><span class="s4">4</span><span class="s2">).attr(</span><span class="s7">&quot;dy&quot;</span><span class="s5">, </span><span class="s2">-</span><span class="s4">4</span><span class="s2">)</span><span class="s5">;</span>
+                <span class="s2">}</span>
+
+                <span class="s6">var </span><span class="s2">legendSpace = width / dataNest.length</span><span class="s5">;</span>
+
+
+                <span class="s2">svg.append(</span><span class="s7">&quot;text&quot;</span><span class="s2">)</span>
+                    .attr(<span class="s7">&quot;x&quot;</span><span class="s5">, </span><span class="s2">(legendSpace / </span><span class="s4">2</span><span class="s2">) + i * legendSpace)</span>
+                    .attr(<span class="s7">&quot;y&quot;</span><span class="s5">, </span><span class="s2">height + (margin.bottom / </span><span class="s4">2</span><span class="s2">) + </span><span class="s4">15</span><span class="s2">)</span>
+                    .attr(<span class="s7">&quot;class&quot;</span><span class="s5">, </span><span class="s7">&quot;legend&quot;</span><span class="s2">)</span>
+                    .style(<span class="s7">&quot;fill&quot;</span><span class="s5">, </span><span class="s6">function </span><span class="s2">() {</span>
+                        <span class="s6">return </span><span class="s2">d.color = color(d.key)</span><span class="s5">;</span>
+                    <span class="s2">})</span>
+                    .on(<span class="s7">&quot;click&quot;</span><span class="s5">, </span><span class="s6">function </span><span class="s2">() {</span>
+                        <span class="s6">var </span><span class="s2">active = !d.active</span><span class="s5">,</span>
+                            <span class="s2">newOpacity = active ? </span><span class="s4">0 </span><span class="s2">: </span><span class="s4">1</span><span class="s5">;</span>
+                        <span class="s2">d3.select(</span><span class="s7">&quot;#tag&quot; </span><span class="s2">+ d.key.replace(</span><span class="s7">/\s+/g</span><span class="s5">, </span><span class="s7">''</span><span class="s2">))</span>
+                            .transition().duration(<span class="s4">100</span><span class="s2">)</span>
+                            .style(<span class="s7">&quot;opacity&quot;</span><span class="s5">, </span><span class="s2">newOpacity)</span><span class="s5">;</span>
+                        <span class="s2">d.active = active</span><span class="s5">;</span>
+                    <span class="s2">})</span>
+                    .text(d.key)<span class="s5">;</span>
+
+            <span class="s2">})</span><span class="s5">;</span>
+
+    <span class="s2">})</span><span class="s5">;</span>
+
+<span class="s0">&lt;/script&gt;</span>
+
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+</body>
+</html>
